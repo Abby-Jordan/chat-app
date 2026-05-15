@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import MessageBubble from "./MessageBubble";
 import MessageInput from "./MessageInput";
 import { useSocket } from "../context/SocketContext";
+import { useCall } from "../context/CallContext";
 import API from "../api/axios";
 
 const ChatWindow = ({ room, chatDetails, users, onSelectChat }) => {
@@ -9,6 +10,7 @@ const ChatWindow = ({ room, chatDetails, users, onSelectChat }) => {
     const [isTyping, setIsTyping] = useState(false);
     const [typingUser, setTypingUser] = useState("");
     const { socket } = useSocket();
+    const { startCall, callState } = useCall();
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
@@ -102,13 +104,28 @@ const ChatWindow = ({ room, chatDetails, users, onSelectChat }) => {
                         <h3>{chatDetails ? chatDetails.name : "Chat"}</h3>
                     </div>
                 </div>
-                <button
-                    onClick={clearChat}
-                    style={{ background: "none", border: "none", color: "var(--error-color)", cursor: "pointer", fontSize: "0.9rem", display: "flex", alignItems: "center", gap: "0.5rem" }}
-                    title="Clear Chat"
-                >
-                    🗑️ Clear
-                </button>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    {/* Call buttons */}
+                    <button
+                        onClick={() => startCall(room._id, 'audio')}
+                        disabled={callState !== 'idle'}
+                        style={{ background: "none", border: "none", cursor: "pointer", fontSize: "1.2rem", opacity: callState !== 'idle' ? 0.4 : 1 }}
+                        title="Audio Call"
+                    >📞</button>
+                    <button
+                        onClick={() => startCall(room._id, 'video')}
+                        disabled={callState !== 'idle'}
+                        style={{ background: "none", border: "none", cursor: "pointer", fontSize: "1.2rem", opacity: callState !== 'idle' ? 0.4 : 1 }}
+                        title="Video Call"
+                    >📹</button>
+                    <button
+                        onClick={clearChat}
+                        style={{ background: "none", border: "none", color: "var(--error-color)", cursor: "pointer", fontSize: "0.9rem", display: "flex", alignItems: "center", gap: "0.5rem" }}
+                        title="Clear Chat"
+                    >
+                        🗑️ Clear
+                    </button>
+                </div>
             </div>
 
             <div className="chat-messages">
