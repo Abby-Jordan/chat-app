@@ -13,13 +13,11 @@ connectDb();
 
 const app = express();
 
-const corsOptions = {
-    origin: process.env.CLIENT_URL,
-    credentials: true,
-};
-app.use(cors(corsOptions));
-app.options(/(.*)/, cors(corsOptions)); // handle preflight OPTIONS requests (Express v5 compatible)
 app.use(express.json());
+app.use(cors({
+    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    credentials: true,
+}));
 
 app.use('/api/auth', authRoutes)
 app.use('/api/rooms', roomRoutes)
@@ -36,6 +34,6 @@ const io = new Server(httpServer, {
 initSocket(io)
 
 const PORT = process.env.PORT || 5000;
-httpServer.listen(PORT, "0.0.0.0", () => {
+httpServer.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
