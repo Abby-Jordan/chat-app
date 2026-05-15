@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import API from "../api/axios";
 import { useAuth } from "../context/AuthContext";
+import { useSocket } from "../context/SocketContext";
 
-const Sidebar = ({ onSelectChat, selectedChatId }) => {
+const Sidebar = ({ onSelectChat, selectedChatId, users, setUsers }) => {
     const { logout, user } = useAuth();
-    const [users, setUsers] = useState([]);
+    const { socket } = useSocket();
     const [rooms, setRooms] = useState([]);
     const [showGroupForm, setShowGroupForm] = useState(false);
     const [groupName, setGroupName] = useState("");
@@ -44,6 +45,21 @@ const Sidebar = ({ onSelectChat, selectedChatId }) => {
         };
         fetchUsersAndRooms();
     }, []);
+
+    // Real-time: add newly registered users instantly (no refresh needed)
+    useEffect(() => {
+        if (!socket) return;
+        const handleNewUser = (newUser) => {
+            // Don't add ourselves or duplicates
+            setUsers(prev => {
+                if (prev.find(u => u._id === newUser._id)) return prev;
+                if (newUser._id === user?._id) return prev;
+                return [...prev, newUser];
+            });
+        };
+        socket.on('new_user', handleNewUser);
+        return () => socket.off('new_user', handleNewUser);
+    }, [socket, user]);
 
     const startChat = async (otherUserId) => {
         try {

@@ -4,7 +4,7 @@ import MessageInput from "./MessageInput";
 import { useSocket } from "../context/SocketContext";
 import API from "../api/axios";
 
-const ChatWindow = ({ room, chatDetails }) => {
+const ChatWindow = ({ room, chatDetails, users, onSelectChat }) => {
     const [messages, setMessages] = useState([]);
     const [isTyping, setIsTyping] = useState(false);
     const [typingUser, setTypingUser] = useState("");
@@ -128,7 +128,7 @@ const ChatWindow = ({ room, chatDetails }) => {
                 <div ref={messagesEndRef} />
             </div>
 
-            <MessageInput roomId={room._id} />
+            <MessageInput roomId={room._id} users={users} onSelectChat={onSelectChat} />
         </div>
     );
 };
