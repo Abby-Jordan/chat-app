@@ -58,7 +58,14 @@ export const getUserRooms = async (req, res) => {
             .populate("lastMessages")
             .sort({ updatedAt: -1 });
 
-        res.status(200).json(rooms);
+        // Filter out null members (users who were deleted from the DB)
+        const cleanedRooms = rooms.map(room => {
+            const roomObj = room.toObject();
+            roomObj.members = roomObj.members.filter(m => m !== null);
+            return roomObj;
+        });
+
+        res.status(200).json(cleanedRooms);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
