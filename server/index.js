@@ -13,11 +13,13 @@ connectDb();
 
 const app = express();
 
-app.use(express.json());
-app.use(cors({
+const corsOptions = {
     origin: process.env.CLIENT_URL,
     credentials: true,
-}));
+};
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // handle preflight OPTIONS requests
+app.use(express.json());
 
 app.use('/api/auth', authRoutes)
 app.use('/api/rooms', roomRoutes)
@@ -26,7 +28,8 @@ const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
     cors: {
-        origin: process.env.CLIENT_URL
+        origin: process.env.CLIENT_URL,
+        credentials: true,
     },
 });
 
