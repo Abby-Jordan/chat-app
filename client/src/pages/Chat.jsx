@@ -16,10 +16,11 @@ const Chat = () => {
         if (!room.members || !user) return null;
 
         const otherUser = room.members.find((m) => {
+            if (!m) return false; // deleted user (null after populate)
             const mId = m._id || m;
             return mId !== user._id;
         });
-        return { name: otherUser?.name || "User", isGroup: false };
+        return { name: otherUser?.name || "Deleted User", isGroup: false };
     };
 
     return (

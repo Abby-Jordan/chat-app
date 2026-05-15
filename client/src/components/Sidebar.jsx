@@ -84,8 +84,14 @@ const Sidebar = ({ onSelectChat, selectedChatId }) => {
 
     const getChatName = (room) => {
         if (room.isGroupChat) return room.name;
-        const otherUser = room.members.find(m => m._id !== user._id);
-        return otherUser ? otherUser.name : "Chat";
+        const otherUser = room.members.find(m => m && m._id !== user._id);
+        return otherUser ? otherUser.name : "Deleted User";
+    };
+
+    const isValidRoom = (room) => {
+        if (room.isGroupChat) return true;
+        // Filter out rooms where the other user has been deleted (null after populate)
+        return room.members.some(m => m && m._id !== user._id);
     };
 
     return (
@@ -163,7 +169,7 @@ const Sidebar = ({ onSelectChat, selectedChatId }) => {
                         <h3 style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginLeft: "0.5rem", marginTop: "1rem" }}>
                             Chats
                         </h3>
-                        {rooms.map(room => (
+                        {rooms.filter(isValidRoom).map(room => (
                             <button
                                 key={room._id}
                                 className={`user-item ${selectedChatId === room._id ? 'active' : ''}`}
