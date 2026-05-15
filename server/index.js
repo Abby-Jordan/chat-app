@@ -32,6 +32,7 @@ const io = new Server(httpServer, {
 });
 
 initSocket(io)
+app.set('io', io) // make io accessible in controllers via req.app.get('io')
 
 const PORT = process.env.PORT || 5000;
 httpServer.listen(PORT, () => {

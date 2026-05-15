@@ -14,6 +14,12 @@ export const register = async (req, res) => {
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "30d" });
 
+        // Broadcast new user to all connected clients so their sidebars update instantly
+        const io = req.app.get('io');
+        if (io) {
+            io.emit('new_user', { _id: user._id, name: user.name, email: user.email });
+        }
+
         res.status(201).json({
             _id: user._id,
             name: user.name,
