@@ -8,7 +8,7 @@ const messageSchema = new mongoose.Schema({
     },
     content: {
         type: String,
-        required: true
+        default: ""
     },
     room: {
         type: mongoose.Schema.Types.ObjectId,
@@ -19,6 +19,11 @@ const messageSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    // Media / file support
+    fileUrl: { type: String, default: null },
+    fileName: { type: String, default: null },
+    fileType: { type: String, default: null },  // 'image' | 'video' | 'audio' | 'document'
+    fileSize: { type: Number, default: null },
     readBy: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
